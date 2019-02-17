@@ -258,7 +258,7 @@ fn main() {
     let chunk_size = n / NTHREADS;
     */
 
-    let max_determinant_log10 = 6;
+    let max_determinant_log10 = 6 + 3;
     let upper_bound : u64 = 3 * u64::pow(10, max_determinant_log10);
     let square_root_upper_bound : u64 = 1 + upper_bound.integer_sqrt();
 
@@ -269,9 +269,10 @@ fn main() {
     let max = upper_bound / 24;
 
     let max_bits = 1500;
+    let min_bits = 400;
 
     let max_x = pow2((max_bits / 2) + 1);
-    let min_x = pow2(300 / 2);
+    let min_x = pow2(min_bits / 2);
 
     // (9..upper_bound).step_by(24).for_each(|d_prime| {
 
