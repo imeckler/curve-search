@@ -13,6 +13,20 @@ def smooth_part(x):
             x /= p
     return (res, factorization)
 
-if __name__ == '__main__':
-    n = int(sys.argv[1])
+def process_one(n):
     print len('{0:b}'.format(n)), smooth_part(n - 1)
+
+def check_line(s):
+    cols = s[7:].split(' , ')
+    process_one(int(cols[0]))
+    process_one(int(cols[1]))
+
+
+if __name__ == '__main__':
+    if len(sys.argv[1]) < 20:
+        for line in open(sys.argv[1]):
+            check_line(line)
+            print
+    else:
+        n = int(sys.argv[1])
+        print len('{0:b}'.format(n)), smooth_part(n - 1)

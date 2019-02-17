@@ -1,18 +1,10 @@
 use rug::Integer;
 use rug::integer::IsPrime;
 use rug::Assign;
-use std::thread;
 use primal::Sieve;
 use quadratic;
 use integer_sqrt::IntegerSquareRoot;
 use rayon::prelude::*;
-use rayon::range::*;
-
-/*
-squarefree check:
-check all
-12.5 * 10^6 primes  < 10^16 ?
-*/
 
 /*
 want to solve
@@ -24,10 +16,6 @@ D' = 3D
 X^2 - D' Y^2 = -8
 
 Fix 0 < D' < 3 * 10^16, D' / 3 squarefree, D' = 9 mod 24, -2 is square mod D'.
-
-fn is_square_free(s : &Sieve, n : u64) -> bool {
-    s.factor(n as usize).unwrap().iter().all(|(_, n)| *n < 2)
-}
 
 */
 
@@ -150,10 +138,6 @@ fn pell1(d : u64, m : i64) -> (Option<(Integer, Integer)>, Vec<(Integer, Integer
     return (result1, results_m)
 }
 
-/*
-fn pell2(d : u64, m : i64) {
-} */
-
 fn pow2(n : u64) -> Integer {
     let mut res = Integer::from(1);
     for _ in 0..n {
@@ -176,10 +160,6 @@ fn smooth_part(n : &Integer) -> Integer {
 }
 
 fn is_potentially_prime(n : &Integer) -> bool {
-    /*
-    let small_primes : [u32; 10] = [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ];
-    small_primes.iter().all(|p| n.mod_u(*p) != 0) */
-
     match n.is_probably_prime(0) {
         IsPrime::No => false,
         _ => true
@@ -209,7 +189,6 @@ fn process_pell_solution(
             let other = Integer::from(2* &l) + 1;
             let s_n = smooth_part(&Integer::from(other)).to_u64();
 
-            // TODO: Check if l is in the right range
             if  l.as_abs().ge(min_x) &&
                 match (s, s_n) {
                     (None, _) | (_, None) => true,
@@ -230,14 +209,6 @@ fn process_pell_solution(
                 if is_potentially_prime(&q) && is_potentially_prime(&n) {
                     println!("q, n = {} , {} , {}", q, n, d_prime)
                 }
-                /*
-                match (q.is_probably_prime(1), n.is_probably_prime(1)) {
-                    (IsPrime::No, _) => (),
-                    (_, IsPrime::No) => (),
-                    _ => {
-                        println!("q, n = {} , {} , {}", q, n, s)
-                    }
-                } */
             }
 
             let prev_x = Integer::from(&x);
@@ -252,29 +223,17 @@ fn process_pell_solution(
 
 
 fn main() {
-    /*
-    static NTHREADS:i64 = 8;
-    let n = NTHREADS * 10000000000;
-    let chunk_size = n / NTHREADS;
-    */
-
     let max_determinant_log10 = 6 + 3;
     let upper_bound : u64 = 3 * u64::pow(10, max_determinant_log10);
     let square_root_upper_bound : u64 = 1 + upper_bound.integer_sqrt();
 
     let sieve = primal::Sieve::new(square_root_upper_bound as usize);
 
-    let mut results = 0;
-    let mut i = 0;
-    let max = upper_bound / 24;
-
     let max_bits = 1500;
     let min_bits = 400;
 
     let max_x = pow2((max_bits / 2) + 1);
     let min_x = pow2(min_bits / 2);
-
-    // (9..upper_bound).step_by(24).for_each(|d_prime| {
 
     let chunk_size = 10000;
     (0..(upper_bound / 24 / chunk_size)).into_par_iter().for_each(|chunk| {
@@ -304,8 +263,6 @@ fn main() {
             }
         }
     });
-
-    println!("RESULTS {}, {}", results, (results as f64) / (upper_bound / 24) as f64);
 }
 
 // where do we go from here
